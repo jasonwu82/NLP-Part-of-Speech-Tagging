@@ -12,8 +12,10 @@ class GivenCounts(object):
     def add_grams(self, grams):
         # grams => [[word, tag], [word, tag]...] or
         # grams => [[tag_i-1, tag_i], [tag_i-1, tag_i]...]
+
         for key, count_key in grams:
             self.counts[key].update([count_key])
+
 
     def calc_probs(self):
         """
@@ -27,7 +29,8 @@ class GivenCounts(object):
             self.probs[key] = post_prob
 
     def get_prob(self, post, given):
-        return self.probs[given].get(post, 0)
+        #return self.probs[given].get(post, 0)
+        return self.probs.get(given, {}).get(post, 0)
 
     def get_post_probs(self, given):
         """ return {'post': prob', }"""

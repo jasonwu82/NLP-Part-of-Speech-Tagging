@@ -1,9 +1,19 @@
 import pandas as pd
+import re
+
+
+re_split = re.compile(r'(?<!\\)\/')
 
 
 def parse_line(line):
     tagged_words = line.split()
-    res = [w.split('/') for w in tagged_words]
+    res = []
+    for w in tagged_words:
+        w_split = re_split.split(w)
+        if len(w_split) != 2:
+            continue
+        res.append(w_split)
+
     return res
 
 

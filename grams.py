@@ -27,7 +27,7 @@ class GivenCounts(object):
             self.probs[key] = post_prob
 
     def get_prob(self, post, given):
-        return self.probs[given][post]
+        return self.probs[given].get(post, 0)
 
     def get_post_probs(self, given):
         """ return {'post': prob', }"""
@@ -38,6 +38,7 @@ class WordTagGram(object):
     def __init__(self):
         self.tag_gram = GivenCounts()
         self.word_tag = GivenCounts()
+        self.unique_tags = set()
 
     def add_line(self, line):
         """
@@ -54,6 +55,9 @@ class WordTagGram(object):
         tags_prev.pop()
         self.tag_gram.add_grams(zip(tags_prev, tags))
 
+        # for tag_counts
+        self.unique_tags.update(tags)
+
         #for tag_prev, tag_next in zip(tags_prev, tags):
     def calculate_probs(self):
         self.tag_gram.calc_probs()
@@ -61,6 +65,9 @@ class WordTagGram(object):
 
     def prob_word_tag(self, word, tag):
         return self.word_tag.get_prob(word, tag)
+
+    def prob_tag_prevtag(self, tag, given_tag):
+        return self.tag_gram.get_prob(tag, given_tag)
 
     def probs_given_tag(self, given_tag):
         return self.tag_gram.get_post_probs(given_tag)
@@ -88,3 +95,7 @@ if __name__ == "__main__":
     assert(wtg.probs_given_tag("NNS")["VBD"] == 0.5)
     print(wtg.probs_given_tag("NNS"))
 
+    print(wtg.unique_tags)
+
+    from viterbi_algo import viterbi_algo
+    viterbi_algo(["Traders", "said", 'the'], wtg)

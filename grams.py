@@ -34,22 +34,27 @@ class GivenCounts(object):
 
     def get_post_probs(self, given):
         """ return {'post': prob', }"""
-        return self.probs[given]
+        return self.probs.get(given, {})
 
 
 class WordTagGram(object):
     def __init__(self):
         self.tag_gram = GivenCounts()
+        # given tag, output word prob
         self.word_tag = GivenCounts()
         self.unique_tags = set()
+        # for 1-gram, given word, output tag prob
+        self.tag_word = GivenCounts()
 
     def add_line(self, line):
         """
-        :param line: [[word, tag],]
+        :param line: [[word, tag],...]
         :return:
         """
         # for word | tag
         self.word_tag.add_grams([reversed(l) for l in line])
+        # for tag | word
+        self.tag_word.add_grams(line)
 
         words, tags = zip(*line)
         # for tag_i | tag_i-1
@@ -64,6 +69,7 @@ class WordTagGram(object):
     def calculate_probs(self):
         self.tag_gram.calc_probs()
         self.word_tag.calc_probs()
+        self.tag_word.calc_probs()
 
     def prob_word_tag(self, word, tag):
         return self.word_tag.get_prob(word, tag)
@@ -73,6 +79,13 @@ class WordTagGram(object):
 
     def probs_given_tag(self, given_tag):
         return self.tag_gram.get_post_probs(given_tag)
+
+    def most_prob_tag_given_word(self, word):
+        probs = self.tag_word.get_post_probs(word)
+        if probs:
+            return max(probs, key=lambda x: probs.get(x, 1))
+        else:
+            return NEW_LINE_TAG
 
 
 if __name__ == "__main__":

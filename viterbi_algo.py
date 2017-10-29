@@ -3,13 +3,11 @@ from grams import NEW_LINE_TAG
 
 def viterbi_algo(words, word_tag_gram):
     unique_tags = list(word_tag_gram.unique_tags)
-    print(unique_tags)
 
     score = [{} for i in range(len(words))]
     back_path = [{} for i in range(len(words))]
     for tag in unique_tags:
         score[0][tag] = word_tag_gram.prob_word_tag(words[0], tag) * word_tag_gram.prob_tag_prevtag(tag, NEW_LINE_TAG)
-    print(score)
 
     for i in range(1, len(words)):
         for tag in unique_tags:
@@ -31,11 +29,10 @@ def viterbi_algo(words, word_tag_gram):
             highest_tag = tag
             highest_score = score[-1][tag]
 
-    print(score)
-    print(back_path)
     path = [highest_tag]
     for i in range(len(back_path)-1, 0, -1):
         path.append(back_path[i][highest_tag])
         highest_tag = path[-1]
     path.reverse()
-    print(path)
+
+    return path

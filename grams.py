@@ -61,7 +61,6 @@ class WordTagGram(object):
         # for tag_counts
         self.unique_tags.update(tags)
 
-        #for tag_prev, tag_next in zip(tags_prev, tags):
     def calculate_probs(self):
         self.tag_gram.calc_probs()
         self.word_tag.calc_probs()

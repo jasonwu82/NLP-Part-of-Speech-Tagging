@@ -10,12 +10,13 @@ class GivenCounts(object):
         self.probs = {}
 
     def add_grams(self, grams):
-        # grams => [[word, tag], [word, tag]...] or
-        # grams => [[tag_i-1, tag_i], [tag_i-1, tag_i]...]
+        """
+        :param grams: [[word, tag], [word, tag]...] or [[tag_i-1, tag_i], [tag_i-1, tag_i]...]
+        :return:
+        """
 
         for key, count_key in grams:
             self.counts[key].update([count_key])
-
 
     def calc_probs(self):
         """
@@ -29,7 +30,6 @@ class GivenCounts(object):
             self.probs[key] = post_prob
 
     def get_prob(self, post, given):
-        #return self.probs[given].get(post, 0)
         return self.probs.get(given, {}).get(post, 0)
 
     def get_post_probs(self, given):
@@ -87,9 +87,6 @@ if __name__ == "__main__":
     print(wtg.tag_gram.counts)
     assert(1 == wtg.tag_gram.counts['#']['NNS'])
     assert (2 == wtg.tag_gram.counts['NN']['IN'])
-
-    #wtg.word_tag.calc_probs()
-    #print(wtg.word_tag.probs)
 
     wtg.calculate_probs()
     assert(0.33 < wtg.prob_word_tag("mainstay", "NN") < 0.34)

@@ -1,6 +1,8 @@
-import read_file
+import io_file
 from grams import WordTagGram
 from viterbi_algo import viterbi_algo
+import argparse
+import time
 
 
 def predict_lines(lines, gram):
@@ -16,23 +18,34 @@ def calc_accuracy(predicted_lines, true_tags_lines):
     return float(correct)/total
 
 
-data = read_file.read_tagged_file("data/POS.train.large")
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("train")
+    parser.add_argument("test")
+    args = parser.parse_args()
+    return args
 
-gram = WordTagGram()
 
-for i in range(len(data)):
-    #print(i)
-    #print(data[i])
-    gram.add_line(data[i])
+if __name__ == "__main__":
+    start_time = time.time()
+    args = parse_args()
+    data = io_file.read_tagged_file(args.train)
 
-gram.calculate_probs()
+    gram = WordTagGram()
 
-#viterbi_algo(["Traders", "said", 'the'], gram)
-viterbi_algo(["I", "believe", 'you'], gram)
+    for i in range(len(data)):
+        gram.add_line(data[i])
 
-test_lines = read_file.read_tagged_file("data/POS.test")
-test_words = [[word for word, tag in line] for line in test_lines]
-test_tags = [[tag for word, tag in line] for line in test_lines]
-predicted_lines = predict_lines(test_words, gram)
-accuracy = calc_accuracy(predicted_lines, test_tags)
-print(accuracy)
+    # calculate probability with added data using counting
+    gram.calculate_probs()
+
+    test_lines = io_file.read_tagged_file(args.test)
+    test_words = [[word for word, tag in line] for line in test_lines]
+    test_tags = [[tag for word, tag in line] for line in test_lines]
+    predicted_tags = predict_lines(test_words, gram)
+    accuracy = calc_accuracy(predicted_tags, test_tags)
+    print("accuracy: {0:.2f}", accuracy*100)
+
+    io_file.write_tagged_file(args.test + ".out", test_words, predicted_tags)
+
+    print("program last {0:.2f} seconds".format(time.time() - start_time))

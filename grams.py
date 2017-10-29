@@ -1,4 +1,5 @@
 from collections import Counter, defaultdict
+import re
 
 
 NEW_LINE_TAG = '#'
@@ -18,23 +19,39 @@ class GivenCounts(object):
         for key, count_key in grams:
             self.counts[key].update([count_key])
 
+    def _good_turing(self, counter):
+        min_count = min(counter.values())
+        turing_count = counter.values().count(min_count)
+        for k, v in counter.items():
+            counter[k] = float(v + turing_count)/turing_count
+        counter.update(["#TURING_NEW#", turing_count])
+        return counter
+
     def calc_probs(self):
         """
         :return: nothing, instead store probability in self.probs
         """
         for key, counter in self.counts.items():
             post_prob = {}
+            #counter = self._good_turing(counter)
             total_counts = sum(counter.values())
             for post_key, post_count in counter.items():
                 post_prob[post_key] = float(post_count)/total_counts
             self.probs[key] = post_prob
 
     def get_prob(self, post, given):
-        return self.probs.get(given, {}).get(post, 0)
+        tmp = self.probs.get(given, {})
+        #default_prob = 0.5 if given in ("NN", "NP") else 0
+        #min_prob = min(tmp.values())
+
+        return tmp.get(post, tmp.get("#TURING_NEW#", 0))
 
     def get_post_probs(self, given):
-        """ return {'post': prob', }"""
+        """ return {'post': prob, }"""
         return self.probs.get(given, {})
+
+
+num_regex = re.compile("^[\-]?[1-9][0-9]*\.?[0-9]+$")
 
 
 class WordTagGram(object):
@@ -72,6 +89,10 @@ class WordTagGram(object):
         self.tag_word.calc_probs()
 
     def prob_word_tag(self, word, tag):
+        if num_regex.match(word):
+            return 1.0 if tag == "CD" else 0
+        elif word not in self.tag_word.probs:
+            return 0.5 if tag in ("NN", "NPS") else 0.0
         return self.word_tag.get_prob(word, tag)
 
     def prob_tag_prevtag(self, tag, given_tag):

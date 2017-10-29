@@ -12,7 +12,12 @@ def parse_line(line):
         w_split = re_split.split(w)
         if len(w_split) != 2:
             continue
-        res.append(w_split)
+        word, tag = w_split
+        if '|' in tag:
+            tag = tag.split('|')[0]
+
+        word = word.lower()
+        res.append((word, tag))
 
     return res
 

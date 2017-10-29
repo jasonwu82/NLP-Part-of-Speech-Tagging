@@ -6,7 +6,14 @@ import time
 
 
 def predict_lines_viterbi(lines, gram):
-    #viterbi_algo(["East", "German", "emigres", "in", "Budapest", "said", "East"], gram)
+    #print(viterbi_algo(["East", "German", "emigres", "in", "Budapest", "said", "East"], gram))
+    #line = ["Dr./NP Talcott/NP led/VBD a/DT team/NN of/IN researchers/NNS"]
+
+    #line = ["Dr.", "Talcott", "led", "a", "team", "of", "researchers"]
+
+    #line = ["The/DT company/NN had/VBD 56.2/CD million/CD"]
+    #line = ["the", "company", "had", "56.2", "million", "average", "shares", "."]
+    #print(viterbi_algo(line, gram))
     return [viterbi_algo(line, gram) for line in lines]
 
 

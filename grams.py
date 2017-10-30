@@ -33,6 +33,7 @@ class GivenCounts(object):
         """
         for key, counter in self.counts.items():
             post_prob = {}
+            # not using good turing right now
             #counter = self._good_turing(counter)
             total_counts = sum(counter.values())
             for post_key, post_count in counter.items():
@@ -41,9 +42,6 @@ class GivenCounts(object):
 
     def get_prob(self, post, given):
         tmp = self.probs.get(given, {})
-        #default_prob = 0.5 if given in ("NN", "NP") else 0
-        #min_prob = min(tmp.values())
-
         return tmp.get(post, tmp.get("#TURING_NEW#", 0))
 
     def get_post_probs(self, given):
@@ -98,8 +96,8 @@ class WordTagGram(object):
         if num_regex.match(word):
             return 1.0 if tag == "CD" else 0
         elif word not in self.tag_word.probs:
-            #return 0.5 if tag in ("NN", "NPS") else 0.0
-            #return 0.33 if tag in ("NN", "NPS", "JJ") else 0.0
+            # return 0.5 if tag in ("NN", "NPS") else 0.0
+            # return 0.33 if tag in ("NN", "NPS", "JJ") else 0.0
 
             # guess the tag probability as same as tag distribution in training data
             return self.tag_prob.get(tag, 0)

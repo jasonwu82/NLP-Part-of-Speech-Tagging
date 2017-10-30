@@ -59,9 +59,10 @@ class WordTagGram(object):
         self.tag_gram = GivenCounts()
         # given tag, output word prob
         self.word_tag = GivenCounts()
-        self.unique_tags = set()
+        self.unique_tags = Counter()
         # for 1-gram, given word, output tag prob
         self.tag_word = GivenCounts()
+        self.tag_prob = {}
 
     def add_line(self, line):
         """
@@ -88,11 +89,20 @@ class WordTagGram(object):
         self.word_tag.calc_probs()
         self.tag_word.calc_probs()
 
+        self.tag_prob = {}
+        tags_sum = sum(self.unique_tags.values())
+        for k, v in self.unique_tags.items():
+            self.tag_prob[k] = float(v)/tags_sum
+
     def prob_word_tag(self, word, tag):
         if num_regex.match(word):
             return 1.0 if tag == "CD" else 0
         elif word not in self.tag_word.probs:
-            return 0.5 if tag in ("NN", "NPS") else 0.0
+            #return 0.5 if tag in ("NN", "NPS") else 0.0
+            #return 0.33 if tag in ("NN", "NPS", "JJ") else 0.0
+
+            # guess the tag probability as same as tag distribution in training data
+            return self.tag_prob.get(tag, 0)
         return self.word_tag.get_prob(word, tag)
 
     def prob_tag_prevtag(self, tag, given_tag):

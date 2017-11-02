@@ -3,10 +3,12 @@ Predict part of speech using Viterbi algorithm
 
 ### Run
 
-run "python Viterbi.py [train_file] [test_file]"
+Run "python Viterbi.py [train_file] [test_file]".
 
-### input format
+### Input Format
+
+In each line,
 
 [word]/[POS tagging] ...
 
-accept '\/' escaping character '/' in word
+Accept '\/' escaping character '/' in word.

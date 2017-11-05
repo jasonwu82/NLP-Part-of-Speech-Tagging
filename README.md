@@ -11,4 +11,4 @@ In each line,
 
 [word]/[POS tagging] ...
 
-Accept '\/' escaping character '/' in word.
+Accept '\\/' escaping character '/' in word.
